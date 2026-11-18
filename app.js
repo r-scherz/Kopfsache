@@ -333,7 +333,7 @@ function renderFrage() {
       <div class="kat">${katIcon(q.k)} ${esc(katName(q.k))}${neu && s.modus !== 'einstufung' ? ' · <span class="neu">neu</span>' : ''}${a.format === 'frei' ? ' · ✍️ Freitext' : ''}</div>
       <h1>${esc(q.f)}</h1>
       <div class="antworten">${koerper}</div>
-      ${s.modus === 'einstufung' ? '<button class="btn zweit" id="weissnicht">Weiß ich nicht</button>' : ''}
+      <button class="btn zweit" id="weissnicht">🤷 Weiß ich nicht</button>
     </div>`;
   $('#beenden').onclick = beenden;
   document.querySelectorAll('[data-i]').forEach(b => b.onclick = () => antworten(a.optionen[+b.dataset.i] === q.a, a.optionen[+b.dataset.i]));
@@ -350,7 +350,7 @@ function renderFrage() {
     $('#pruefen').onclick = pr; f.onkeydown = e => { if (e.key === 'Enter') pr(); };
   }
   if ($('#zeigen')) $('#zeigen').onclick = () => { a.aufgedeckt = true; renderKarteSelbst(); };
-  if ($('#weissnicht')) $('#weissnicht').onclick = () => antworten(false, '(weiß ich nicht)');
+  $('#weissnicht').onclick = () => { a.weissNicht = true; antworten(false, ''); };
 }
 
 // Karteikarte (eigene Fragen ohne Auswahlantworten): selbst bewerten
@@ -388,7 +388,7 @@ function renderErklaerung() {
   const zuklappen = r && Z.setup.ziel === 'quiz';
   $('#app').innerHTML = `${kopfzeile()}
     <div class="frage">
-      <div class="ergebnis ${r ? 'gut' : 'schlecht'}">${r ? '✓ Richtig!' : '✗ Leider falsch'}</div>
+      <div class="ergebnis ${r ? 'gut' : a.weissNicht ? '' : 'schlecht'}">${r ? '✓ Richtig!' : a.weissNicht ? '💡 Jetzt weißt du es' : '✗ Leider falsch'}</div>
       <h1 class="klein">${esc(q.f)}</h1>
       ${!r && a.antwort.eingabe ? `<p class="deine">Deine Antwort: ${esc(a.antwort.eingabe)}</p>` : ''}
       <div class="karte loesung"><small class="leise">Richtige Antwort</small><b>${esc(loesung)}</b></div>
@@ -555,7 +555,7 @@ function renderMehr() {
     <div class="karte"><b>💾 Sicherung</b><p class="leise">Deine Daten liegen nur auf diesem iPhone. Ab und zu sichern (z. B. in iCloud Drive), damit nichts verloren geht.</p>
       <div class="reihe2"><button class="btn" id="export">Sichern</button><label class="btn zweit">Wiederherstellen<input type="file" id="import" accept=".json,application/json" hidden></label></div>
       <button class="btn gefahr" id="reset">Alles zurücksetzen</button></div>
-    <p class="leise mitte">KOPFSACHE · ${FRAGEN.length} Fragen im Katalog · Version 1.0</p>`;
+    <p class="leise mitte">KOPFSACHE · ${FRAGEN.length} Fragen im Katalog · Version 1.1</p>`;
   $('#eigeneNeu').onclick = eigeneFrage;
   document.querySelectorAll('[data-del]').forEach(b => b.onclick = () => { Z.eigene = Z.eigene.filter(q => q.id !== b.dataset.del); delete Z.karten[b.dataset.del]; speichern(); renderMehr(); });
   if ($('#mKopieren')) $('#mKopieren').onclick = () => {
